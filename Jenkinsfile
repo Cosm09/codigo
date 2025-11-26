@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Compilando y construyendo imagen Docker de la aplicación..."
-                echo "docker build -t parcial3-app:${BUILD_NUMBER} ."
+                echo "docker build -t codigo-app:${BUILD_NUMBER} ."
                 '''
             }
         }
@@ -21,7 +21,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Levantando contenedor de prueba..."
-                echo "docker run -d --name parcial3-test -p 5000:5000 parcial3-app:${BUILD_NUMBER}"
+                echo "docker run -d --name codigo-test -p 5000:5000 codigo-app:${BUILD_NUMBER}"
                 echo "Ejecutando pruebas básicas contra http://localhost:5000/login"
                 '''
             }
