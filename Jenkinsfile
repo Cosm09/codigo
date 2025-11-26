@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Compilando y construyendo imagen Docker de la aplicación..."
-                echo "docker build -t codigo-app:${BUILD_NUMBER} ."
+                echo "docker build -t parcial3-app:${BUILD_NUMBER} ."
                 '''
             }
         }
