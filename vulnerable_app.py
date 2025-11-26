@@ -30,16 +30,11 @@ def login():
 
         conn = get_db_connection()
 
-        # Inyección de SQL solo si se detecta un payload de inyección de SQL
-        if "' OR '" in password:
-            query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
-            user = conn.execute(query).fetchone()
-        else:
-            query = "SELECT * FROM users WHERE username = ? AND password = ?"
-            hashed_password = hash_password(password)
-            user = conn.execute(query, (username, hashed_password)).fetchone()
-
-        print("Consulta SQL generada:", query)
+        # MITIGACIÓN: siempre usamos contraseña hasheada + consulta parametrizada
+        hashed_password = hash_password(password)
+        query = "SELECT * FROM users WHERE username = ? AND password = ?"
+        user = conn.execute(query, (username, hashed_password)).fetchone()
+        conn.close()
 
         if user:
             session['user_id'] = user['id']
@@ -47,13 +42,19 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             return 'Invalid credentials!'
-    return '''
-        <form method="post">
-            Username: <input type="text" name="username"><br>
-            Password: <input type="password" name="password"><br>
-            <input type="submit" value="Login">
-        </form>
-    '''
+
+    # Formulario de login (GET)
+    login_form = """
+    <form method="post">
+        <label>Username:</label>
+        <input type="text" name="username"><br>
+        <label>Password:</label>
+        <input type="password" name="password"><br>
+        <input type="submit" value="Login">
+    </form>
+    """
+    return render_template_string(login_form)
+
 
 
 @app.route('/dashboard')
@@ -121,4 +122,4 @@ def admin():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
